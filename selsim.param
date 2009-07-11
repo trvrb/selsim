@@ -1,0 +1,10 @@
+LENGTH = 10			# length of nucleotide sequence
+
+MU = 0.01			# per base per generation mutation rate
+
+ADVPRO = 0.1		# proportion of mutations advantageous
+ADVSEL = 0.01		# selective advantage of advantageous mutants
+DELPRO = 0.5		# proportion of mutations deleterious
+DELSEL = 0.05		# selective disadvantage of deleterious mutants
+
+POPSIZE = 100		# number of individuals in population

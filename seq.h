@@ -19,7 +19,8 @@ class Sequence {
 public:
 	Sequence();								// constructor, generates a new random sequence
 
-	void newMutant();						// produces a new mutant with single individual in the population
+	void newMutant(int mutations);			// produces a new mutant with X mutations in a single individual 
+											// in the population
 		
 	string getSeq();						// get functions
 	double getFitness();

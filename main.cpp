@@ -31,6 +31,7 @@ RNG rgen;
 
 /* declaring global parameters */
 #include "param.h"
+#include "param.cpp"
 
 /* Sequence class */
 #include "seq.h"
@@ -40,13 +41,18 @@ RNG rgen;
 #include "pop.h"
 #include "pop.cpp"
 
+/* Function prototypes */
+void importParameters();
+
 int main() {			
+	
+	Parameters prm;
+	prm.print();
 	
 	Sequence initialSeq;
 	Sequence newSeq = initialSeq;
-	newSeq.newMutant();
+	newSeq.newMutant(5);
 	
 	return 0;
 }
-
 

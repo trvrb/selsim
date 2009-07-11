@@ -5,17 +5,28 @@ This contains all the global variables used by selsim, can be modified later if 
 #ifndef PARAM_H
 #define PARAM_H
 
+// defaults
 string ALPHA = "ATGC";
 int BASES = 4;
-double LENGTH = 10;			// length of nucleotide sequence
+double LENGTH = 100;					// length of nucleotide sequence
+double MU = 0.01;						// per base per generation mutation rate
+double ADVPRO = 0.0;					// proportion of mutations advantageous
+double ADVSEL = 0.0;					// selective advantage of advantageous mutants
+double DELPRO = 0.0;					// proportion of mutations deleterious
+double DELSEL = 0.0;					// selective disadvantage of deleterious mutants
+int POPSIZE = 100;						// number of individuals in population
 
-double MU = 0.01;			// per base per generation mutation rate
+class Parameters {
 
-double ADVPRO = 0.1;		// proportion of mutations advantageous
-double ADVSEL = 0.01;		// selective advantage of advantageous mutants
-double DELPRO = 0.5;		// proportion of mutations deleterious
-double DELSEL = 0.05;		// selective disadvantage of deleterious mutants
+public:
+	Parameters();						// constructor, imports parameters from selsim.param if available
 
-int POPSIZE = 100;			// number of individuals in population
+	void print();						// prints parameter listing
+	
+private:
+	void importLine(string);			// reads a string and attempts to extract parameters from it
+	
+	
+};
 
 #endif

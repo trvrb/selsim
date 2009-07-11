@@ -16,14 +16,12 @@ Member function definitions for Sequence class
 #include <sstream>
 
 /* Constructor function, gives a random sequence of length nucleotides */
-Sequence::Sequence(int length) {
+Sequence::Sequence() {
 
 	// filling seq with random nucleotides
 	seq = "";	
-	string alpha = "ATGC";
-	
-	for (int i=0; i<length; i++) {
-		char nt = alpha[rgen.uniform(0,4)]; 
+	for (int i=0; i<LENGTH; i++) {
+		char nt = ALPHA[rgen.uniform(0,BASES)]; 
 		seq.push_back(nt);
 	}
 	
@@ -41,28 +39,20 @@ Sequence::Sequence(int length) {
 	
 }
 
-
-/* Constructor function, inherits properties from another Sequence object */ 
-/* Mutates ancestor sequence at rate mu per base pair */
-Sequence::Sequence(Sequence const& ancestor) {
+/* Mutates ancestor sequence at rate MU per base pair */
+/* Proportion ADVPRO multiply fitness by 1+ADVSEL */
+/* Proportion DELPRO divide fitness by 1+DELSEL */
+void Sequence::newMutant() {
 
 	// mutating ancestor sequence, poisson draw and then distributing these mutations uniformly over sequence
-//	seq = ancestor.getSeq();
-	int length = seq.size();
-	string alpha = "ATGC";
-	int mutations = rgen.poisson(MU*length);
-	
+	int mutations = rgen.poisson(MU*LENGTH);
 	for (int i=0; i<mutations; i++) {
-		int loc = rgen.uniform(0,length); 
-		seq.at(loc) = alpha[rgen.uniform(0,4)];
+		int loc = rgen.uniform(0,LENGTH); 
+		seq.at(loc) = ALPHA[rgen.uniform(0,BASES)];
 	}
 	
-	// inheriting fitness
-//	fitness = ancestor.getFitness();
 	
-	// setting population frequency to 1.0
-//	freq = 1.0;
-
+	
 #ifdef DEBUG
 	cout << "Sequence: " << seq << endl;
 	cout << "  " << "fitness: " << fitness << endl;

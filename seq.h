@@ -17,14 +17,15 @@ using namespace std;
 class Sequence {
 
 public:
-	Sequence(int);							// constructor, generates a new random sequence of specified length
-	Sequence(Sequence const&);				// constructor, mutates a provided sequence 
-	
-	string getSeq();
+	Sequence();								// constructor, generates a new random sequence
+
+	void newMutant();						// produces a new mutant with single individual in the population
+		
+	string getSeq();						// get functions
 	double getFitness();
 	double getFreq();
 	
-	void setFitness(double);
+	void setFitness(double);				// set functions
 	void setFreq(double);
 	
 private:

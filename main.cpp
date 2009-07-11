@@ -29,19 +29,22 @@ using namespace std;
 #include "rng.cpp"
 RNG rgen;
 
-/* declaring global parameters, these can be modified later */
-double MU = 0.1;
+/* declaring global parameters */
+#include "param.h"
 
+/* Sequence class */
 #include "seq.h"
 #include "seq.cpp"
+
+/* Population class */
 #include "pop.h"
 #include "pop.cpp"
 
 int main() {			
 	
-	Sequence initialSeq(50);
+	Sequence initialSeq;
 	Sequence newSeq = initialSeq;
-	
+	newSeq.newMutant();
 	
 	return 0;
 }

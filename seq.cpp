@@ -44,8 +44,13 @@ Sequence::Sequence() {
 /* Proportion DELPRO divide fitness by 1+DELSEL */
 void Sequence::newMutant() {
 
-	// mutating ancestor sequence, poisson draw and then distributing these mutations uniformly over sequence
-	int mutations = rgen.poisson(MU*LENGTH);
+	// this is called only when a mutation is known to occur 
+	int mutations = 1;
+	
+	// however, there should be a MU*LENGTH chance of a double mutant
+	mutations += rgen.poisson(MU*LENGTH);
+	
+	// distributing these mutations uniformly over sequence
 	for (int i=0; i<mutations; i++) {
 		int loc = rgen.uniform(0,LENGTH); 
 		seq.at(loc) = ALPHA[rgen.uniform(0,BASES)];

@@ -22,22 +22,25 @@ using namespace std;
 
 #define INF pow(double(10),double(100)) // 10^100 (~infinity)
 #define PI 3.1415926535897932
+#define DEBUG // comment line out to turn off debugging
 
+/* random number generator, global scope */
 #include "rng.h"
 #include "rng.cpp"
+RNG rgen;
 
-//#define DEBUG // comment line out to turn off debugging
+/* declaring global parameters, these can be modified later */
+double MU = 0.1;
 
-/* works like:
-#ifdef DEBUG
-...
-#endif 
-*/
+#include "seq.h"
+#include "seq.cpp"
+#include "pop.h"
+#include "pop.cpp"
 
 int main() {			
 	
-	
-
+	Sequence initialSeq(50);
+	Sequence newSeq = initialSeq;
 	
 	
 	return 0;

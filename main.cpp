@@ -41,8 +41,9 @@ RNG rgen;
 #include "pop.h"
 #include "pop.cpp"
 
-/* Function prototypes */
-void importParameters();
+/* Sample class */
+#include "sample.h"
+#include "sample.cpp"
 
 int main() {			
 	

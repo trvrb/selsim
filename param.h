@@ -5,9 +5,11 @@ This contains all the global variables used by selsim, can be modified later if 
 #ifndef PARAM_H
 #define PARAM_H
 
-// defaults
+// never modified
 string ALPHA = "ATGC";
 int BASES = 4;
+
+// defaults
 double LENGTH = 100;					// length of nucleotide sequence
 double MU = 0.01;						// per base per generation mutation rate
 double ADVPRO = 0.0;					// proportion of mutations advantageous

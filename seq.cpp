@@ -50,6 +50,15 @@ void Sequence::newMutant(int mutations) {
 		seq.at(loc) = ALPHA[rgen.uniform(0,BASES)];
 	}
 	
+	// fitness effects multiplicative
+	double r = rgen.uniform(0,1);
+	if (r < ADVPRO)
+		fitness *= 1 + ADVSEL;
+	else if (r > ADVPRO && r < ADVPRO + DELPRO)
+		fitness /= 1 + DELSEL;
+		
+	// single individual
+	freq = 1/(double)POPSIZE;
 	
 #ifdef DEBUG
 	cout << "Sequence: " << seq << endl;

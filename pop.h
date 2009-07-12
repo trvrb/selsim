@@ -15,10 +15,18 @@ using namespace std;
 class Population {
 
 public:
-	Population();								// constructor
+	Population();									// constructor, creates an initial random sequence at 1.0 count
+	
+	void evolveStep();								// one generation of evolution, mutation + selection
+	
+	void print();									// go through population and print its contents
 																		
 private:
-
+	int alleles;									// number of alleles in population
+	vector<Sequence> pop;							// population vector, contains a list of sequences
+	
+	void mutateInd();								// select a random individual and mutate it
+	void purge();									// remove alleles with count = 0
 	
 };
 

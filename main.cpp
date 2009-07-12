@@ -2,6 +2,9 @@
 	Simple program to do population genetic simulations.  Evolve a population of sequences under
 	neutral drift or positive or negative selection.
 	
+	Multiplicative fitness.
+	Time scaled so that one unit of time is N generations.
+	
 	Class Sequence holds sequences along with their fitness.
 	Class Population holds a set of sequences.  Functions to step population forward in time.
 		Needs to store mutation / selection parameters.
@@ -22,7 +25,7 @@ using namespace std;
 
 #define INF pow(double(10),double(100)) // 10^100 (~infinity)
 #define PI 3.1415926535897932
-#define DEBUG // comment line out to turn off debugging
+//#define DEBUG // comment line out to turn off debugging
 
 /* random number generator, global scope */
 #include "rng.h"
@@ -50,10 +53,10 @@ int main() {
 	Parameters prm;
 	prm.print();
 	
-	Sequence initialSeq;
-	Sequence newSeq = initialSeq;
-	newSeq.newMutant(5);
-	
+	Population p;
+	p.print();
+	p.evolveStep();
+	p.print();
+				
 	return 0;
 }
-

@@ -28,21 +28,17 @@ Sequence::Sequence() {
 	// setting fitness of new sequence to 1.0
 	fitness = 1.0;
 	
-	// setting population frequency to 1.0
-	freq = 1.0;
-
-#ifdef DEBUG
-	cout << "Sequence: " << seq << endl;
-	cout << "  " << "fitness: " << fitness << endl;
-	cout << "  " << "frequency: " << freq << endl;
-#endif 
+	// setting population count to POPSIZE
+	count = POPSIZE;
 	
 }
 
-/* Mutates ancestor sequence at rate MU per base pair */
+/* Mutates ancestor sequence */
 /* Proportion ADVPRO multiply fitness by 1+ADVSEL */
 /* Proportion DELPRO divide fitness by 1+DELSEL */
-void Sequence::newMutant(int mutations) {
+void Sequence::newMutant() {
+
+	int mutations = 1;
 
 	// distributing these mutations uniformly over sequence
 	for (int i=0; i<mutations; i++) {
@@ -58,21 +54,16 @@ void Sequence::newMutant(int mutations) {
 		fitness /= 1 + DELSEL;
 		
 	// single individual
-	freq = 1/(double)POPSIZE;
-	
-#ifdef DEBUG
-	cout << "Sequence: " << seq << endl;
-	cout << "  " << "fitness: " << fitness << endl;
-	cout << "  " << "frequency: " << freq << endl;
-#endif 
+	count = 1;
 	
 }
 
 /* Get functions */
 string Sequence::getSeq() { return seq; }
 double Sequence::getFitness() { return fitness; }
-double Sequence::getFreq() { return freq; }
+int Sequence::getCount() { return count; }
 
 /* Set functions */
 void Sequence::setFitness(double f) { fitness = f; }
-void Sequence::setFreq(double f) { freq = f; }
+void Sequence::setCount(int c) { count = c; }
+void Sequence::decCount(int c) { count -= c; }

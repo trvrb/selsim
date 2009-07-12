@@ -1,7 +1,7 @@
 /* seq.h
 Sequence class definition
 This object contains a nucleotide sequence, an associated fitness value, and the sequence's
-frequency in the population.
+count in the population.
 */
 
 #ifndef SEQ_H
@@ -19,20 +19,21 @@ class Sequence {
 public:
 	Sequence();								// constructor, generates a new random sequence
 
-	void newMutant(int mutations);			// produces a new mutant with X mutations in a single individual 
-											// in the population
+	void newMutant();						// produces a new mutant with a single mutation
 		
 	string getSeq();						// get functions
 	double getFitness();
-	double getFreq();
+	int getCount();
 	
 	void setFitness(double);				// set functions
-	void setFreq(double);
+	void setCount(int);
+	
+	void decCount(int);						// push count down by x
 	
 private:
 	string seq;								// sequence
 	double fitness;							// inherited, or set to 1.0 for a new sequence
-	double freq;							// set to 1.0 for a new sequence
+	int count;								// set to POPSIZE for a new sequence
 	
 };
 

@@ -17,6 +17,9 @@ double ADVSEL = 0.0;					// selective advantage of advantageous mutants
 double DELPRO = 0.0;					// proportion of mutations deleterious
 double DELSEL = 0.0;					// selective disadvantage of deleterious mutants
 int POPSIZE = 100;						// number of individuals in population
+int RUNTIME = 100;						// number of generations to run simulation
+int BURNIN = 90;						// number of generations to run before logging data
+int SAMPLECOUNT = 10;					// approximate number of samples to log
 
 class Parameters {
 

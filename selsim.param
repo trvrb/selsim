@@ -1,10 +1,14 @@
-LENGTH = 20			# length of nucleotide sequence
+LENGTH = 20				# length of nucleotide sequence
 
-MU = 0.001			# per base per generation mutation rate
+MU = 0.001				# per base per generation mutation rate
 
-ADVPRO = 0.1		# proportion of mutations advantageous
-ADVSEL = 0.01		# selective advantage of advantageous mutants
-DELPRO = 0.5		# proportion of mutations deleterious
-DELSEL = 0.05		# selective disadvantage of deleterious mutants
+ADVPRO = 0.1			# proportion of mutations advantageous
+ADVSEL = 0.01			# selective advantage of advantageous mutants
+DELPRO = 0.5			# proportion of mutations deleterious
+DELSEL = 0.05			# selective disadvantage of deleterious mutants
 
-POPSIZE = 100		# number of individuals in population
+POPSIZE = 100			# number of individuals in population
+
+int RUNTIME = 100		# number of generations to run simulation
+int BURNIN = 90			# number of generations to run before logging data
+int SAMPLECOUNT = 5		# approximate number of samples to log

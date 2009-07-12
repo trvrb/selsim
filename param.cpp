@@ -69,7 +69,13 @@ void Parameters::importLine(string line) {
 	else if (pstring == "DELSEL")
 		DELSEL = v;
 	else if (pstring == "POPSIZE")
-		POPSIZE = v;	
+		POPSIZE = v;
+	else if (pstring == "RUNTIME")
+		RUNTIME = v;
+	else if (pstring == "BURNIN")
+		BURNIN = v;
+	else if (pstring == "SAMPLECOUNT")
+		SAMPLECOUNT = v;		
 	
 }
 
@@ -83,5 +89,8 @@ void Parameters::print() {
 	cout << "  proportion deleterious: " << DELPRO << endl;
 	cout << "  selective disadvantage: " << DELSEL << endl;
 	cout << "  population size: " << POPSIZE << endl;
+	cout << "  running time: " << RUNTIME << endl;
+	cout << "  burn-in: " << BURNIN << endl;
+	cout << "  approximate sample count: " << SAMPLECOUNT << endl;
 
 }

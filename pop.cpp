@@ -84,10 +84,10 @@ void Population::evolveStep() {
 	}
 
 	
-#ifdef DEBUG
+	#ifdef DEBUG
 	cout << "After mutation:" << endl;
 	print();
-#endif 
+	#endif 
 
 	// SELECTION
 
@@ -105,18 +105,18 @@ void Population::evolveStep() {
 	 	pop[i].setCount(sample[i]);
 	 }
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	cout << "After selection:" << endl;
 	print();
-#endif 
+	#endif 
 	 
 	 // HOUSEKEEPING
 	 purge();
 
-#ifdef DEBUG
+	#ifdef DEBUG
 	cout << "After housekeeping:" << endl;
 	print();
-#endif 	 
+	#endif 	 
 
 }
 

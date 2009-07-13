@@ -51,12 +51,33 @@ RNG rgen;
 int main() {			
 	
 	Parameters prm;
-	prm.print();
-	
+	Sample s;
 	Population p;
+	
+	prm.print();
+	cout << "Initial population: " << endl;
 	p.print();
-	p.evolveStep();
-	p.print();
-				
+	
+	for (int gen=0; gen<RUNTIME; gen++) {
+	
+		// EVOLVE //////////////
+		p.evolveStep();
+			
+		// SAMPLE //////////////	
+		if (gen > BURNIN) {
+			int samples = rgen.poisson( (RUNTIME-BURNIN) / (double) SAMPLECOUNT );
+			for (int c=0; c<samples; c++) {
+				s.pushBack( p.sampleSeq(), gen );	// time scaled within Sample class
+			}
+		}
+		
+		// OUTPUT //////////////
+		cout << "Step " << gen << "\t";
+		for (int j=0; j<p.getAlleleCount(); j++) 
+			cout << ".";
+		cout << endl;
+	
+	}
+		
 	return 0;
 }

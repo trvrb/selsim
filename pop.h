@@ -19,12 +19,16 @@ public:
 	
 	void evolveStep();								// one generation of evolution, mutation + selection
 	
-//	string sample();								// outputs a random seq from the population
+	string sampleSeq();								// outputs a random seq from the population
 	void print();									// go through population and print its contents
+	
+	int getAlleleCount();
 																		
 private:
 	int alleles;									// number of alleles in population
 	vector<Sequence> pop;							// population vector, contains a list of sequences
+	
+	int sampleAllele();								// outputs a random allele from the population
 	
 	void mutate();									// select a random individual and mutate it
 	void select();									// multinomial sample weighted by fitness

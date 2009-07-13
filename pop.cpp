@@ -22,6 +22,31 @@ Population::Population() {
 	alleles = 1;
 }
 
+/* Select a random allele in the population */
+int Population::sampleAllele() {
+
+	 // construct vector representing the discrete CDF of seq frequences
+	 double totalProb = 0;
+	 vector<double> seqProbs(alleles);
+	 for (int i = 0; i < alleles; i++ ) {
+		totalProb += pop[i].getCount() / (double) POPSIZE;
+		seqProbs[i] = totalProb;
+	 }
+	 
+	 // drawing a sample with the seq CDF
+	 int randAllele;
+	 double rindex = rgen.uniform(0,totalProb);
+	 for (int i = 0; i < alleles; i++) {
+		if (rindex < seqProbs[i]) {
+			randAllele = i;
+			break;
+		}
+	 }
+	 
+	 return randAllele;
+
+}
+
 /* Mutate a single individual in the population */
 void Population::mutate() {
 
@@ -31,27 +56,8 @@ void Population::mutate() {
 	for (int m=0; m<mutations; m++) {
 
 		// select random individual	
-		
-		 // construct vector representing the discrete CDF of seq frequences
-		 double totalProb = 0;
-		 vector<double> seqProbs(alleles);
-		 for (int i = 0; i < alleles; i++ ) {
-			totalProb += pop[i].getCount() / (double) POPSIZE;
-			seqProbs[i] = totalProb;
-		 }
-		 
-		 // drawing a sample with the seq CDF
-		 int randAllele;
-		 double rindex = rgen.uniform(0,totalProb);
-		 for (int i = 0; i < alleles; i++) {
-			if (rindex < seqProbs[i]) {
-				randAllele = i;
-				break;
-			}
-		 }
-		 
-		// mutate this individual
-		
+		int randAllele = sampleAllele();
+				 	
 		// decrement ancestor allele count
 		pop[randAllele].decCount(1);
 		
@@ -127,12 +133,26 @@ void Population::evolveStep() {
 
 }
 
+/* Sample a random sequence from the population NOT weighted by fitness */
+string Population::sampleSeq() {
+
+	string s = pop[sampleAllele()].getSeq();
+	return s;
+
+}
+
 /* Print pop contents */
 void Population::print() {
+
 	cout << alleles << " alleles in the population" << endl;
 	for (int i=0; i < alleles; i++) {
 		cout << "  Sequence: " << pop[i].getSeq() << endl;
 		cout << "    fitness: " << pop[i].getFitness() << endl;
 		cout << "    count: " << pop[i].getCount() << endl;
 	}
+
+}
+
+int Population::getAlleleCount() {
+	return alleles;
 }

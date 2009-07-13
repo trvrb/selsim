@@ -23,40 +23,67 @@ Population::Population() {
 }
 
 /* Mutate a single individual in the population */
-void Population::mutateInd() {
+void Population::mutate() {
 
-	// select random individual	
+	// MU*LENGTH*POPSIZE is poisson distributed, 
+	// Applying mutations iteratively allows for the proper chance of a double mutant
+	int mutations = rgen.poisson(MU*LENGTH*POPSIZE);
+	for (int m=0; m<mutations; m++) {
+
+		// select random individual	
+		
+		 // construct vector representing the discrete CDF of seq frequences
+		 double totalProb = 0;
+		 vector<double> seqProbs(alleles);
+		 for (int i = 0; i < alleles; i++ ) {
+			totalProb += pop[i].getCount() / (double) POPSIZE;
+			seqProbs[i] = totalProb;
+		 }
+		 
+		 // drawing a sample with the seq CDF
+		 int randAllele;
+		 double rindex = rgen.uniform(0,totalProb);
+		 for (int i = 0; i < alleles; i++) {
+			if (rindex < seqProbs[i]) {
+				randAllele = i;
+				break;
+			}
+		 }
+		 
+		// mutate this individual
+		
+		// decrement ancestor allele count
+		pop[randAllele].decCount(1);
+		
+		// create new mutant
+		Sequence mutant = pop[randAllele];
+		mutant.newMutant();
+		pop.push_back(mutant);
+		alleles++;
 	
-	 // construct vector representing the discrete CDF of seq frequences
-	 double totalProb = 0;
-	 vector<double> seqProbs(alleles);
-	 for (int i = 0; i < alleles; i++ ) {
-		totalProb += pop[i].getCount() / (double) POPSIZE;
-		seqProbs[i] = totalProb;
-	 }
-	 
-	 // drawing a sample with the seq CDF
-	 int randAllele;
-	 double rindex = rgen.uniform(0,totalProb);
-	 for (int i = 0; i < alleles; i++) {
-		if (rindex < seqProbs[i]) {
-			randAllele = i;
-			break;
-		}
-	 }
-	 
-	// mutate this individual
-	
-	// decrement ancestor allele count
-	pop[randAllele].decCount(1);
-	
-	// create new mutant
-	Sequence mutant = pop[randAllele];
-	mutant.newMutant();
-	pop.push_back(mutant);
-	alleles++;
+	}
 
 }
+
+/* Multinomial sample from the population weighted by fitness */
+void Population::select() {
+
+	// Multinomial sample with draw probability = frequency * fitness
+	vector<double> seqProbs(alleles);
+	for (int i=0; i < alleles; i++ ) {
+		seqProbs[i] = ( pop[i].getCount() / (double) POPSIZE ) * pop[i].getFitness();
+	}
+	 
+	vector<uint> sample(alleles);
+	rgen.multinom(POPSIZE,seqProbs,sample);
+	 
+	// Modify counts based on multinomial sample
+	for (int i=0; i < alleles; i++) {
+		pop[i].setCount(sample[i]);
+	}
+
+}
+
 
 /* Remove alleles with count = 0*/
 void Population::purge() {
@@ -75,14 +102,7 @@ void Population::purge() {
 void Population::evolveStep() {
 
 	// MUTATION
-	
-	// MU*LENGTH*POPSIZE is poisson distributed, 
-	// Applying mutations iteratively allows for the proper chance of a double mutant
-	int mutations = rgen.poisson(MU*LENGTH*POPSIZE);
-	for (int i=0; i<mutations; i++) {
-		mutateInd();
-	}
-
+	mutate();	
 	
 	#ifdef DEBUG
 	cout << "After mutation:" << endl;
@@ -90,20 +110,7 @@ void Population::evolveStep() {
 	#endif 
 
 	// SELECTION
-
-	// Multinomial sample with draw probability = frequency * fitness
-	 vector<double> seqProbs(alleles);
-	 for (int i=0; i < alleles; i++ ) {
-		seqProbs[i] = ( pop[i].getCount() / (double) POPSIZE ) * pop[i].getFitness();
-	 }
-	 
-	 vector<uint> sample(alleles);
-	 rgen.multinom(POPSIZE,seqProbs,sample);
-	 
-	 // Modify counts based on multinomial sample
-	 for (int i=0; i < alleles; i++) {
-	 	pop[i].setCount(sample[i]);
-	 }
+	select();
 
 	#ifdef DEBUG
 	cout << "After selection:" << endl;

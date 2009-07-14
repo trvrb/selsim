@@ -65,19 +65,22 @@ int main() {
 			
 		// SAMPLE //////////////	
 		if (gen > BURNIN) {
-			int samples = rgen.poisson( (RUNTIME-BURNIN) / (double) SAMPLECOUNT );
+			int samples = rgen.poisson( SAMPLECOUNT / (double) (RUNTIME-BURNIN) );
 			for (int c=0; c<samples; c++) {
 				s.pushBack( p.sampleSeq(), gen );	// time scaled within Sample class
 			}
 		}
 		
-		// OUTPUT //////////////
+		// SCREEN //////////////
 		cout << "Step " << gen << "\t";
-		for (int j=0; j<p.getAlleleCount(); j++) 
+		for (int j=0; j<p.getAlleleCount(); j += 5) 
 			cout << ".";
 		cout << endl;
 	
 	}
+	
+	// SAMPLE OUTPUT //////////////
+	s.printXML();
 		
 	return 0;
 }

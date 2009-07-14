@@ -21,7 +21,9 @@ public:
 	void printXML();						// print BEAST-ready XML file of all samples
 																		
 private:
-	vector<string> sampleNames;				// randomly generated names of 6 characters A-Z
+	int sampleCount;
+	vector<string> sampleNames;				// randomly generated names of "0" + 6 characters A-Z
+											// "0" here for compatibility with Migrate
 	vector<string> sampleSeqs;				// sequences
 	vector<double> sampleDates;				// dual dates, with RUNTIME = 0 and generations scaled so that POPSIZE = 1
 											// time runs backwards

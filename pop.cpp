@@ -135,10 +135,20 @@ void Population::evolveStep() {
 
 /* Sample a random sequence from the population NOT weighted by fitness */
 string Population::sampleSeq() {
-
 	string s = pop[sampleAllele()].getSeq();
 	return s;
+}
 
+/* Output a sequence */
+string Population::getSeq(int allele) {
+	string s = pop[allele].getSeq();
+	return s;
+}
+
+/* Output a fitness */
+double Population::getFitness(int allele) {
+	double d = pop[allele].getFitness();
+	return d;
 }
 
 /* Print pop contents */

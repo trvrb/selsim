@@ -55,6 +55,7 @@ int main() {
 	Population p;
 	
 	prm.print();
+	
 	cout << "Initial population: " << endl;
 	p.print();
 	
@@ -67,7 +68,8 @@ int main() {
 		if (gen > BURNIN) {
 			int samples = rgen.poisson( SAMPLECOUNT / (double) (RUNTIME-BURNIN) );
 			for (int c=0; c<samples; c++) {
-				s.pushBack( p.sampleSeq(), gen );	// time scaled within Sample class
+				int allele = p.sampleAllele();
+				s.pushBack( p.getSeq(allele), gen, p.getFitness(allele) );
 			}
 		}
 		
@@ -79,8 +81,12 @@ int main() {
 	
 	}
 	
+	cout << "Final population: " << endl;
+	p.print();
+	
 	// SAMPLE OUTPUT //////////////
 	s.printXML();
+	s.printFitnesses();
 		
 	return 0;
 }

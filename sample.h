@@ -17,7 +17,9 @@ class Sample {
 public:
 	Sample();								// constructor
 	
-	void pushBack(string,int);				// add another sample to the list
+	void pushBack(string,int,double);		// add another sample to the list: seq, gen, fitness
+
+	void printFitnesses();					// print Mathematica-ready rule list 
 	void printXML();						// print BEAST-ready XML file of all samples
 																		
 private:
@@ -27,6 +29,7 @@ private:
 	vector<string> sampleSeqs;				// sequences
 	vector<double> sampleDates;				// dual dates, with RUNTIME = 0 and generations scaled so that POPSIZE = 1
 											// time runs backwards
+	vector<double> sampleFitnesses;
 	
 };
 

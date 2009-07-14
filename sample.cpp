@@ -20,7 +20,7 @@ Sample::Sample() {
 	sampleCount = 0;
 }
 
-void Sample::pushBack(string seq, int gen) {
+void Sample::pushBack(string seq, int gen, double fitness) {
 
 	char alpha [26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
 		'S','T','U','V','W','X','Y','Z'}; 
@@ -37,6 +37,21 @@ void Sample::pushBack(string seq, int gen) {
 	sampleNames.push_back(name);
 	sampleSeqs.push_back(seq);
 	sampleDates.push_back(date);
+	sampleFitnesses.push_back(fitness);
+
+}
+
+void Sample::printFitnesses() {
+
+	string fitFile( "selsim.fitness" );
+	ofstream fitStream;
+	fitStream.open( fitFile.c_str(),ios::out);
+
+	for (int i=0; i<sampleCount; i++) {
+		fitStream << sampleFitnesses[i] << endl;
+	}
+
+	fitStream.close();
 
 }
 

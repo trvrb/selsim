@@ -30,6 +30,9 @@ private:
 	vector<double> sampleDates;				// dual dates, with RUNTIME = 0 and generations scaled so that POPSIZE = 1
 											// time runs backwards
 	vector<double> sampleFitnesses;
+	vector<int> sampleLabels;				// taken from fitnesses, starts at 0, increases from here
+	
+	int startLabel;
 	
 };
 

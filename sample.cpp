@@ -18,26 +18,40 @@ Member function definitions for Sample class
 /* Constructor function to initialize private data */
 Sample::Sample() {
 	sampleCount = 0;
+	startLabel = 0;
 }
 
 void Sample::pushBack(string seq, int gen, double fitness) {
 
+	double date = RUNTIME - gen;
+	
+	sampleCount++;
+
+	sampleSeqs.push_back(seq);
+	sampleDates.push_back(date);
+	sampleFitnesses.push_back(fitness);
+	
+	/* converting fitness to label */
+	/* doesn't work with simultaneous advantagous and deleterious mutation */
+	if (sampleCount == 1) {
+		startLabel = abs( log (fitness) / log (1 + ADVSEL + DELSEL) );
+	}
+	int label = abs( log (fitness) / log (1 + ADVSEL + DELSEL) ) - startLabel;																
+	sampleLabels.push_back(label);
+
 	char alpha [26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
 		'S','T','U','V','W','X','Y','Z'}; 
-	string name = "0";
+	
+	string name;
+	stringstream temp;
+	temp << label;
+	name = temp.str();
+
 	for (int i = 0; i < 6; i++) {
 		int r = rgen.uniform(0,26);
 		name.push_back(alpha[r]);
 	}
-
-//	double date = (RUNTIME - gen) / (double) POPSIZE;
-	double date = RUNTIME - gen;
-	
-	sampleCount++;
 	sampleNames.push_back(name);
-	sampleSeqs.push_back(seq);
-	sampleDates.push_back(date);
-	sampleFitnesses.push_back(fitness);
 
 }
 
@@ -48,7 +62,7 @@ void Sample::printFitnesses() {
 	fitStream.open( fitFile.c_str(),ios::out);
 
 	for (int i=0; i<sampleCount; i++) {
-		fitStream << sampleFitnesses[i] << endl;
+		fitStream << sampleFitnesses[i] << "\t" << sampleLabels[i] << endl;
 	}
 
 	fitStream.close();

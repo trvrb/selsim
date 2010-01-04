@@ -2,8 +2,8 @@ LENGTH = 1000			# length of nucleotide sequence
 
 MU = 0.00001			# per base per generation mutation rate
 
-ADVPRO = 1.0			# proportion of mutations advantageous
-ADVSEL = 0.001			# selective advantage of advantageous mutants
+ADVPRO = 0.0			# proportion of mutations advantageous
+ADVSEL = 0.0			# selective advantage of advantageous mutants
 DELPRO = 0.0			# proportion of mutations deleterious
 DELSEL = 0.0			# selective disadvantage of deleterious mutants
 

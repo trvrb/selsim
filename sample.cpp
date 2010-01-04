@@ -33,11 +33,18 @@ void Sample::pushBack(string seq, int gen, double fitness) {
 	
 	/* converting fitness to label */
 	/* doesn't work with simultaneous advantagous and deleterious mutation */
-	if (sampleCount == 1) {
-		startLabel = abs( log (fitness) / log (1 + ADVSEL + DELSEL) );
+	int label = 0;
+	if (ADVSEL > 0.000001 || DELSEL > 0.000001) {
+		if (sampleCount == 1) {
+			startLabel = abs( log (fitness) / log (1 + ADVSEL + DELSEL) );
+		}
+		label = abs( log (fitness) / log (1 + ADVSEL + DELSEL) ) - startLabel;	
+		sampleLabels.push_back(label);
 	}
-	int label = abs( log (fitness) / log (1 + ADVSEL + DELSEL) ) - startLabel;																
-	sampleLabels.push_back(label);
+	// avoiding a divide by 0
+	else {
+		sampleLabels.push_back(label);
+	}
 
 	char alpha [26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
 		'S','T','U','V','W','X','Y','Z'}; 

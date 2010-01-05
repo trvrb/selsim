@@ -180,14 +180,13 @@ void Sample::printXML() {
 	xmlStream << "\t<hkyModel id=\"hky\">" << endl;
 	xmlStream << "\t\t<frequencies>" << endl;
 	xmlStream << "\t\t\t<frequencyModel dataType=\"nucleotide\">" << endl;
-	xmlStream << "\t\t\t\t<alignment idref=\"alignment\"/>" << endl;
 	xmlStream << "\t\t\t\t<frequencies>" << endl;
-	xmlStream << "\t\t\t\t\t<parameter id=\"hky.frequencies\" dimension=\"4\"/>" << endl;
+	xmlStream << "\t\t\t\t\t<parameter id=\"hky.frequencies\" value=\"0.25 0.25 0.25 0.25\"/>" << endl;
 	xmlStream << "\t\t\t\t</frequencies>" << endl;
 	xmlStream << "\t\t\t</frequencyModel>" << endl;
 	xmlStream << "\t\t</frequencies>" << endl;
 	xmlStream << "\t\t<kappa>" << endl;
-	xmlStream << "\t\t\t<parameter id=\"hky.kappa\" value=\"1.0\" lower=\"1.0E-8\" upper=\"Infinity\"/>" << endl;
+	xmlStream << "\t\t\t<parameter id=\"hky.kappa\" value=\"1.0\"/>" << endl;
 	xmlStream << "\t\t</kappa>" << endl;
 	xmlStream << "\t</hkyModel>" << endl;
 	xmlStream << endl;
@@ -212,9 +211,6 @@ void Sample::printXML() {
 
 	// OPERATORS //////////////		
 	xmlStream << "\t<operators id=\"operators\">" << endl;
-	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"1\">" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"hky.kappa\"/>" << endl;
-	xmlStream << "\t\t</scaleOperator>" << endl;
 	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"3\">" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"clock.rate\"/>" << endl;
 	xmlStream << "\t\t</scaleOperator>" << endl;
@@ -252,12 +248,9 @@ void Sample::printXML() {
 	xmlStream << endl;
 	
 	// MCMC //////////////		
-	xmlStream << "\t<mcmc id=\"mcmc\" chainLength=\"10000000\" autoOptimize=\"true\">" << endl;
+	xmlStream << "\t<mcmc id=\"mcmc\" chainLength=\"1000000000\" autoOptimize=\"true\">" << endl;
 	xmlStream << "\t\t<posterior id=\"posterior\">" << endl;
 	xmlStream << "\t\t\t<prior id=\"prior\">" << endl;
-	xmlStream << "\t\t\t\t<jeffreysPrior>" << endl;
-	xmlStream << "\t\t\t\t\t<parameter idref=\"hky.kappa\"/>" << endl;
-	xmlStream << "\t\t\t\t</jeffreysPrior>" << endl;
 	xmlStream << "\t\t\t\t<jeffreysPrior>" << endl;
 	xmlStream << "\t\t\t\t\t<parameter idref=\"constant.popSize\"/>" << endl;
 	xmlStream << "\t\t\t\t</jeffreysPrior>" << endl;
@@ -292,7 +285,6 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<parameter idref=\"clock.rate\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"treeModel.rootHeight\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"constant.popSize\"/>" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"hky.kappa\"/>" << endl;
 	xmlStream << "\t\t\t<treeLikelihood idref=\"treeLikelihood\"/>" << endl;
 	xmlStream << "\t\t\t<coalescentLikelihood idref=\"coalescent\"/>" << endl;
 	xmlStream << "\t\t</log>" << endl;

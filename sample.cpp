@@ -18,7 +18,6 @@ Member function definitions for Sample class
 /* Constructor function to initialize private data */
 Sample::Sample() {
 	sampleCount = 0;
-	startLabel = 0;
 }
 
 void Sample::pushBack(string seq, int gen, double fitness) {
@@ -31,34 +30,49 @@ void Sample::pushBack(string seq, int gen, double fitness) {
 	sampleDates.push_back(date);
 	sampleFitnesses.push_back(fitness);
 	
-	/* converting fitness to label */
-	/* doesn't work with simultaneous advantagous and deleterious mutation */
-	int label = 0;
-	if (ADVSEL > 0.000001 || DELSEL > 0.000001) {
-		if (sampleCount == 1) {
-			startLabel = abs( log (fitness) / log (1 + ADVSEL + DELSEL) );
+}
+
+
+void Sample::constructNames() {
+
+	/* find sample with lowest fitness */
+	double minFitness = 1000000.0;
+	for (int i=0; i<sampleCount; i++) {
+		if (sampleFitnesses[i] < minFitness) {
+			minFitness = sampleFitnesses[i];
 		}
-		label = abs( log (fitness) / log (1 + ADVSEL + DELSEL) ) - startLabel;	
-		sampleLabels.push_back(label);
 	}
-	// avoiding a divide by 0
-	else {
-		sampleLabels.push_back(label);
+		
+	int minLabel = 0;
+	if (ADVSEL > 0.000001 || DELSEL > 0.000001) {
+		minLabel = abs( log (minFitness) / log (1 + ADVSEL + DELSEL) );
 	}
-
-	char alpha [26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
-		'S','T','U','V','W','X','Y','Z'}; 
 	
-	string name;
-	stringstream temp;
-	temp << label;
-	name = temp.str();
+	char alpha [26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
+		'S','T','U','V','W','X','Y','Z'};
+	
+	for (int i=0; i<sampleCount; i++) {
 
-	for (int i = 0; i < 6; i++) {
-		int r = rgen.uniform(0,26);
-		name.push_back(alpha[r]);
+		/* converting fitness to label */
+		/* doesn't work with simultaneous advantagous and deleterious mutation */
+		int label = 0;
+		if (ADVSEL > 0.000001 || DELSEL > 0.000001) {	
+			label = abs( log (sampleFitnesses[i]) / log (1 + ADVSEL + DELSEL) ) - minLabel;	
+		}
+		sampleLabels.push_back(label);
+
+		string name;
+		stringstream temp;
+		temp << label;
+		name = temp.str();
+	
+		for (int j = 0; j < 6; j++) {
+			int r = rgen.uniform(0,26);
+			name.push_back(alpha[r]);
+		}
+		sampleNames.push_back(name);
+		
 	}
-	sampleNames.push_back(name);
 
 }
 
@@ -69,7 +83,7 @@ void Sample::printFitnesses() {
 	fitStream.open( fitFile.c_str(),ios::out);
 
 	for (int i=0; i<sampleCount; i++) {
-		fitStream << sampleFitnesses[i] << "\t" << sampleLabels[i] << endl;
+		fitStream << sampleDates[i] << "\t" << sampleFitnesses[i] << "\t" << sampleLabels[i] << endl;
 	}
 
 	fitStream.close();

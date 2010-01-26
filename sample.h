@@ -18,6 +18,8 @@ public:
 	Sample();								// constructor
 	
 	void pushBack(string,int,double);		// add another sample to the list: seq, gen, fitness
+	void constructNames();					// takes vector of Fitnesses and constrcts vector of labels 
+											// and vector of names
 
 	void printFitnesses();					// print Mathematica-ready rule list 
 	void printXML();						// print BEAST-ready XML file of all samples
@@ -31,8 +33,6 @@ private:
 											// time runs backwards
 	vector<double> sampleFitnesses;
 	vector<int> sampleLabels;				// taken from fitnesses, starts at 0, increases from here
-	
-	int startLabel;
 	
 };
 

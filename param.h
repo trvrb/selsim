@@ -20,6 +20,7 @@ int POPSIZE = 100;						// number of individuals in population
 int RUNTIME = 100;						// number of generations to run simulation
 int BURNIN = 90;						// number of generations to run before logging data
 int SAMPLECOUNT = 10;					// approximate number of samples to log
+int PRINTSTEP = 100;					// print population
 
 class Parameters {
 

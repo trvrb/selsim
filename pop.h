@@ -25,7 +25,7 @@ public:
 	string getSeq(int);								// outputs sequence corresponding to an allele
 	double getFitness(int);							// outputs fitness corresponding to an allele
 	
-	void print();									// go through population and print its contents
+	void print(int step);							// go through population and print its contents
 	
 	int getAlleleCount();
 																		

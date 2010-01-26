@@ -75,7 +75,9 @@ void Parameters::importLine(string line) {
 	else if (pstring == "BURNIN")
 		BURNIN = v;
 	else if (pstring == "SAMPLECOUNT")
-		SAMPLECOUNT = v;		
+		SAMPLECOUNT = v;
+	else if (pstring == "PRINTSTEP")
+		PRINTSTEP = v;		
 	
 }
 
@@ -92,5 +94,6 @@ void Parameters::print() {
 	cout << "  running time: " << RUNTIME << endl;
 	cout << "  burn-in: " << BURNIN << endl;
 	cout << "  approximate sample count: " << SAMPLECOUNT << endl;
+	cout << "  print population every: " << PRINTSTEP << endl;
 
 }

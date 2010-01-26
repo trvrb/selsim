@@ -55,10 +55,7 @@ int main() {
 	Population p;
 	
 	prm.print();
-	
-	cout << "Initial population: " << endl;
-	p.print();
-	
+		
 	for (int gen=0; gen<RUNTIME; gen++) {
 	
 		// EVOLVE //////////////
@@ -66,6 +63,9 @@ int main() {
 			
 		// SAMPLE //////////////	
 		if (gen > BURNIN) {
+			if (gen % PRINTSTEP == 0) {
+				p.print(gen);
+			}
 			int samples = rgen.poisson( SAMPLECOUNT / (double) (RUNTIME-BURNIN) );
 			for (int c=0; c<samples; c++) {
 				int allele = p.sampleAllele();
@@ -81,10 +81,8 @@ int main() {
 	
 	}
 	
-	cout << "Final population: " << endl;
-	p.print();
-	
 	// SAMPLE OUTPUT //////////////
+	s.constructNames();
 	s.printXML();
 	s.printFitnesses();
 		

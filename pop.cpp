@@ -20,6 +20,12 @@ Population::Population() {
 	Sequence initialSeq;
 	pop.push_back(initialSeq);
 	alleles = 1;
+
+	string popFile( "selsim.pop" );
+	ofstream popStream;
+	popStream.open( popFile.c_str(),ios::out);	
+	popStream.close();
+	
 }
 
 /* Select a random allele in the population */
@@ -152,14 +158,19 @@ double Population::getFitness(int allele) {
 }
 
 /* Print pop contents */
-void Population::print() {
+void Population::print(int step) {
 
-	cout << alleles << " alleles in the population" << endl;
+	string popFile( "selsim.pop" );
+	ofstream popStream;
+	popStream.open( popFile.c_str(),ios::app);	
+
 	for (int i=0; i < alleles; i++) {
-		cout << "  Sequence: " << pop[i].getSeq() << endl;
-		cout << "    fitness: " << pop[i].getFitness() << endl;
-		cout << "    count: " << pop[i].getCount() << endl;
+		for (int j=0; j < pop[i].getCount(); j++) {
+			popStream << step << "\t" << pop[i].getSeq() << endl;
+		}
 	}
+
+	popStream.close();
 
 }
 

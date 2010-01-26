@@ -7,8 +7,9 @@ ADVSEL = 0.0			# selective advantage of advantageous mutants
 DELPRO = 0.0			# proportion of mutations deleterious
 DELSEL = 0.0			# selective disadvantage of deleterious mutants
 
-POPSIZE = 1000			# number of individuals in population
+POPSIZE = 500			# number of individuals in population
 
-int RUNTIME = 60000		# number of generations to run simulation
-int BURNIN = 50000		# number of generations to run before logging data
-int SAMPLECOUNT = 1000	# approximate number of samples to log
+RUNTIME = 60000			# number of generations to run simulation
+BURNIN = 50000			# number of generations to run before logging data
+SAMPLECOUNT = 100		# approximate number of samples to log
+PRINTSTEP = 100			# print population

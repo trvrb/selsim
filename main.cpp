@@ -64,7 +64,7 @@ int main() {
 		// SAMPLE //////////////	
 		if (gen > BURNIN) {
 			if (gen % PRINTSTEP == 0) {
-				p.print(gen);
+				p.print(gen-BURNIN);
 			}
 			int samples = rgen.poisson( SAMPLECOUNT / (double) (RUNTIME-BURNIN) );
 			for (int c=0; c<samples; c++) {

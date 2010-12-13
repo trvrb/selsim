@@ -55,8 +55,11 @@ int main() {
 	Population p;
 	
 	prm.print();
+	
+	int time = 5000;
+	int start = RUNTIME-time;	
 		
-	for (int gen=0; gen<RUNTIME; gen++) {
+	for (int gen=0; gen<start; gen++) {
 	
 		// EVOLVE //////////////
 		p.evolveStep();
@@ -80,6 +83,37 @@ int main() {
 		cout << endl;
 	
 	}
+	
+	// Split off a new population
+	Population p2 = p;
+	
+	// Further evolve population 1
+	for (int gen=start; gen<RUNTIME; gen++) {
+	
+		// EVOLVE //////////////
+		p.evolveStep();
+			
+		int samples = rgen.poisson( ((double) SAMPLECOUNT * 0.5) / (double) (time) );
+		for (int c=0; c<samples; c++) {
+			int allele = p.sampleAllele();
+			s.pushBack( p.getSeq(allele), gen, p.getFitness(allele) );
+		}
+		
+	}	
+	
+	// Further evolve population 2
+	for (int gen=start; gen<RUNTIME; gen++) {
+	
+		// EVOLVE //////////////
+		p2.evolveStep();
+			
+		int samples = rgen.poisson( ((double) SAMPLECOUNT * 0.5) / (double) (time) );
+		for (int c=0; c<samples; c++) {
+			int allele = p2.sampleAllele();
+			s.pushBack( p2.getSeq(allele), gen, p2.getFitness(allele) );
+		}
+		
+	}		
 	
 	// SAMPLE OUTPUT //////////////
 	s.constructNames();

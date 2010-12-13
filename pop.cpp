@@ -129,14 +129,14 @@ void Population::evolveStep() {
 	print();
 	#endif 
 	 
-	 // HOUSEKEEPING
-	 purge();
+	// HOUSEKEEPING
+	purge();
 
 	#ifdef DEBUG
 	cout << "After housekeeping:" << endl;
 	print();
 	#endif 	 
-
+	
 }
 
 /* Sample a random sequence from the population NOT weighted by fitness */

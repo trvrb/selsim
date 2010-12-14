@@ -33,6 +33,7 @@ private:
 											// time runs backwards
 	vector<double> sampleFitnesses;
 	vector<int> sampleLabels;				// taken from fitnesses, starts at 0, increases from here
+	int maxLabel;
 	
 };
 

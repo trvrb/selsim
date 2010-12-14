@@ -256,7 +256,7 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t</frequencyModel>" << endl;
 	xmlStream << "\t\t</rootFrequencies>" << endl;
 	xmlStream << "\t\t<rates relativeTo=\"1\">" << endl;
-	xmlStream << "\t\t\t<parameter id=\"fitnessRates\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;
+	xmlStream << "\t\t\t<parameter id=\"fitnessRates\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;		
 	xmlStream << "\t\t</rates>" << endl;
 	xmlStream << "\t\t<rateIndicator>" << endl;
 	xmlStream << "\t\t\t<parameter id=\"fitnessIndicators\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;
@@ -325,13 +325,6 @@ void Sample::printXML() {
 	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"30\" scaleAllIndependently=\"true\" autoOptimize=\"true\">" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;
 	xmlStream << "\t\t</scaleOperator>" << endl;
-	xmlStream << "\t\t<bitFlipOperator weight=\"30\">" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"fitnessIndicators\"/>" << endl;
-	xmlStream << "\t\t</bitFlipOperator>" << endl;
-	xmlStream << "\t\t<bitFlipInSubstitutionModelOperator scaleFactor=\"0.75\" weight=\"30\" autoOptimize=\"true\">" << endl;
-	xmlStream << "\t\t\t<complexSubstitutionModel idref=\"fitnessModel\"/>" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;	
-	xmlStream << "\t\t</bitFlipInSubstitutionModelOperator>" << endl;	
 	xmlStream << "\t</operators>" << endl;
 	xmlStream << endl;
 	
@@ -343,12 +336,25 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t\t\t<parameter idref=\"constant.popSize\"/>" << endl;
 	xmlStream << "\t\t\t\t</jeffreysPrior>" << endl;
 	xmlStream << "\t\t\t\t<coalescentLikelihood idref=\"coalescent\"/>" << endl;
-	xmlStream << "\t\t\t\t<cachedPrior>" << endl;
-	xmlStream << "\t\t\t\t\t<gammaPrior shape=\"1.0\" scale=\"1.0\" offset=\"0.0\">" << endl;
-	xmlStream << "\t\t\t\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;
-	xmlStream << "\t\t\t\t\t</gammaPrior>" << endl;
-	xmlStream << "\t\t\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;
-	xmlStream << "\t\t\t\t</cachedPrior>" << endl;
+		
+	int dimen = 0;
+	for (int i=maxLabel; i>0; i--) {
+		xmlStream << "\t\t\t\t<exponentialPrior mean=\"1.0\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+		dimen++;
+		for (int j=1; j<i; j++) {
+			xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+			dimen++;
+		}
+	}
+	for (int i=maxLabel; i>0; i--) {
+		xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+		dimen++;
+		for (int j=1; j<i; j++) {
+			xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+			dimen++;
+		}
+	}		
+	
 	xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.005\" offset=\"0\">" << endl;
 	xmlStream << "\t\t\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
 	xmlStream << "\t\t\t\t</exponentialPrior>" << endl;
@@ -386,7 +392,7 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<parameter idref=\"constant.popSize\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;						
 	xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;	
-	xmlStream << "\t\t\t<parameter idref=\"fitnessIndicators\"/>" << endl;		
+//	xmlStream << "\t\t\t<parameter idref=\"fitnessIndicators\"/>" << endl;		
 	xmlStream << "\t\t</log>" << endl;
 	xmlStream << "\t\t<logTree id=\"treeFileLog\" logEvery=\"10000\" nexusFormat=\"true\" fileName=\"selsim.trees\" sortTranslationTable=\"true\">" << endl;
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;

@@ -155,28 +155,19 @@ void Sample::printXML() {
 	xmlStream << "\t</attributePatterns>" << endl;
 	xmlStream << endl;		
 	
-	// POPULATION SIZE //////////////
-	xmlStream << "\t<!-- A prior assumption that the population size has remained constant -->" << endl;
-	xmlStream << "\t<!-- throughout the time spanned by the genealogy. -->" << endl;
-	xmlStream << "\t<constantSize id=\"constant\" units=\"years\">" << endl;
+	// STARTING TREE
+	xmlStream << "\t<constantSize id=\"initialDemo\" units=\"years\">" << endl;
 	xmlStream << "\t\t<populationSize>" << endl;
-	xmlStream << "\t\t\t<parameter id=\"constant.popSize\" value=\"" << POPSIZE 	// starting with the neutral expectation
-		<< "\" lower=\"0.0\" upper=\"Infinity\"/>" << endl;
+	xmlStream << "\t\t\t<parameter id=\"initialDemo.popSize\" value=\"100.0\"/>" << endl;
 	xmlStream << "\t\t</populationSize>" << endl;
 	xmlStream << "\t</constantSize>" << endl;
 	xmlStream << endl;
-
-	// INITIAL TREE //////////////
-	xmlStream << "\t<!-- Construct a rough-and-ready UPGMA tree as an starting tree -->" << endl;
-	xmlStream << "\t<upgmaTree id=\"startingTree\">" << endl;
-	xmlStream << "\t\t<distanceMatrix correction=\"JC\">" << endl;
-	xmlStream << "\t\t\t<patterns>" << endl;
-	xmlStream << "\t\t\t\t<alignment idref=\"alignment\"/>" << endl;
-	xmlStream << "\t\t\t</patterns>" << endl;
-	xmlStream << "\t\t</distanceMatrix>" << endl;
-	xmlStream << "\t</upgmaTree>" << endl;
-	xmlStream << endl;
-
+	xmlStream << "\t<coalescentTree id=\"startingTree\">" << endl;
+	xmlStream << "\t\t<taxa idref=\"taxa\"/>" << endl;
+	xmlStream << "\t\t<constantSize idref=\"initialDemo\"/>" << endl;
+	xmlStream << "\t</coalescentTree>" << endl;
+	
+	// TREE MODEL
 	xmlStream << "\t<treeModel id=\"treeModel\">" << endl;
 	xmlStream << "\t\t<coalescentTree idref=\"startingTree\"/>" << endl;
 	xmlStream << "\t\t<rootHeight>" << endl;
@@ -189,18 +180,27 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<parameter id=\"treeModel.allInternalNodeHeights\"/>" << endl;
 	xmlStream << "\t\t</nodeHeights>" << endl;
 	xmlStream << "\t</treeModel>" << endl;
-	xmlStream << endl;
+	xmlStream << endl;	
 	
-	xmlStream << "\t<coalescentLikelihood id=\"coalescent\">" << endl;
-	xmlStream << "\t\t<model>" << endl;
-	xmlStream << "\t\t\t<constantSize idref=\"constant\"/>" << endl;
-	xmlStream << "\t\t</model>" << endl;
+	// SKYLINE
+	xmlStream << "\t<generalizedSkyLineLikelihood id=\"skyline\" linear=\"false\">" << endl;
+	xmlStream << "\t\t<populationSizes>" << endl;
+	xmlStream << "\t\t\t<parameter id=\"skyline.popSize\" dimension=\"10\" value=\"500.0\" lower=\"0.0\" upper=\"1.0E8\"/>" << endl;
+	xmlStream << "\t\t</populationSizes>" << endl;
+	xmlStream << "\t\t<groupSizes>" << endl;
+	xmlStream << "\t\t\t<parameter id=\"skyline.groupSize\" dimension=\"10\"/>" << endl;
+	xmlStream << "\t\t</groupSizes>" << endl;
 	xmlStream << "\t\t<populationTree>" << endl;
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;
 	xmlStream << "\t\t</populationTree>" << endl;
-	xmlStream << "\t</coalescentLikelihood>\t" << endl;
-	xmlStream << endl;
-	
+	xmlStream << "\t</generalizedSkyLineLikelihood>" << endl;
+	xmlStream << "\t<exponentialMarkovLikelihood id=\"eml1\" jeffreys=\"true\">" << endl;
+	xmlStream << "\t\t<chainParameter>" << endl;
+	xmlStream << "\t\t\t<parameter idref=\"skyline.popSize\"/>" << endl;
+	xmlStream << "\t\t</chainParameter>" << endl;
+	xmlStream << "\t</exponentialMarkovLikelihood>" << endl;
+	xmlStream << endl;	
+
 	// CLOCK //////////////
 	xmlStream << "\t<!-- The strict clock (Uniform rates across branches) -->" << endl;
 	xmlStream << "\t<strictClockBranchRates id=\"branchRates\">" << endl;
@@ -297,9 +297,12 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t\t<parameter idref=\"treeModel.allInternalNodeHeights\"/>" << endl;
 	xmlStream << "\t\t\t</down>" << endl;
 	xmlStream << "\t\t</upDownOperator>" << endl;
-	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"3\">" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"constant.popSize\"/>" << endl;
+	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"15\">" << endl;
+	xmlStream << "\t\t\t<parameter idref=\"skyline.popSize\"/>" << endl;
 	xmlStream << "\t\t</scaleOperator>" << endl;
+	xmlStream << "\t\t<deltaExchange delta=\"1\" integer=\"true\" weight=\"6\" autoOptimize=\"false\">" << endl;
+	xmlStream << "\t\t\t<parameter idref=\"skyline.groupSize\"/>" << endl;
+	xmlStream << "\t\t</deltaExchange>" << endl;
 	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"3\">" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"treeModel.rootHeight\"/>" << endl;
 	xmlStream << "\t\t</scaleOperator>" << endl;
@@ -317,7 +320,6 @@ void Sample::printXML() {
 	xmlStream << "\t\t</wideExchange>" << endl;
 	xmlStream << "\t\t<wilsonBalding weight=\"3\">" << endl;
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;
-	xmlStream << "\t\t\t<constantSize idref=\"constant\"/>" << endl;
 	xmlStream << "\t\t</wilsonBalding>" << endl;
 	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"10\">" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
@@ -332,10 +334,11 @@ void Sample::printXML() {
 	xmlStream << "\t<mcmc id=\"mcmc\" chainLength=\"1000000000\" autoOptimize=\"true\">" << endl;
 	xmlStream << "\t\t<posterior id=\"posterior\">" << endl;
 	xmlStream << "\t\t\t<prior id=\"prior\">" << endl;
-	xmlStream << "\t\t\t\t<jeffreysPrior>" << endl;
-	xmlStream << "\t\t\t\t\t<parameter idref=\"constant.popSize\"/>" << endl;
-	xmlStream << "\t\t\t\t</jeffreysPrior>" << endl;
-	xmlStream << "\t\t\t\t<coalescentLikelihood idref=\"coalescent\"/>" << endl;
+	xmlStream << "\t\t\t\t<oneOnXPrior>" << endl;
+	xmlStream << "\t\t\t\t\t<parameter idref=\"skyline.popSize\"/>" << endl;
+	xmlStream << "\t\t\t\t</oneOnXPrior>" << endl;
+	xmlStream << "\t\t\t\t<generalizedSkyLineLikelihood idref=\"skyline\"/>" << endl;
+	xmlStream << "\t\t\t\t<exponentialMarkovLikelihood idref=\"eml1\"/>" << endl;
 		
 	int dimen = 0;
 	for (int i=maxLabel; i>0; i--) {
@@ -389,10 +392,9 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<likelihood idref=\"likelihood\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"clock.rate\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"treeModel.rootHeight\"/>" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"constant.popSize\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;						
-	xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;	
-//	xmlStream << "\t\t\t<parameter idref=\"fitnessIndicators\"/>" << endl;		
+	xmlStream << "\t\t\t<parameter idref=\"skyline.popSize\"/>" << endl;
+	xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;		
 	xmlStream << "\t\t</log>" << endl;
 	xmlStream << "\t\t<logTree id=\"treeFileLog\" logEvery=\"10000\" nexusFormat=\"true\" fileName=\"selsim.trees\" sortTranslationTable=\"true\">" << endl;
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;

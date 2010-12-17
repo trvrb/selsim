@@ -114,7 +114,9 @@ void Sample::printXML() {
 	for (int i=0; i<sampleCount; i++) {
 		xmlStream << "\t\t<taxon id=\"" << sampleNames[i] << "\">" << endl;
 		xmlStream << "\t\t\t<date value=\"" << sampleDates[i] << "\" direction=\"backwards\" units=\"years\"/>" << endl;
-		xmlStream << "\t\t\t<attr name=\"fitness\">" <<  sampleLabels[i] << "</attr>" << endl;
+		if (maxLabel>0) {
+			xmlStream << "\t\t\t<attr name=\"fitness\">" <<  sampleLabels[i] << "</attr>" << endl;
+		}
 		xmlStream << "\t\t</taxon>" << endl;
 	}
 	xmlStream << "\t</taxa>" << endl;
@@ -140,20 +142,24 @@ void Sample::printXML() {
 	xmlStream << "\t</patterns>" << endl;
 	xmlStream << endl;
 	
-	// FITNESS TYPES
-	xmlStream << "\t<generalDataType id=\"fitness\">" << endl;
-	for (int i=0; i<=maxLabel; i++) {
-		xmlStream << "\t\t<state code=\"" << i << "\"/>" << endl;
-	}
-	xmlStream << "\t</generalDataType>" << endl;
-	xmlStream << endl;	
+	if (maxLabel>0) {	
 	
-	// FITNESS PATTERNS
-	xmlStream << "\t<attributePatterns id=\"fitnessPatterns\" attribute=\"fitness\">" << endl;
-	xmlStream << "\t\t<generalDataType idref=\"fitness\"/>" << endl;
-	xmlStream << "\t\t<taxa idref=\"taxa\"/>" << endl;
-	xmlStream << "\t</attributePatterns>" << endl;
-	xmlStream << endl;		
+		// FITNESS TYPES
+		xmlStream << "\t<generalDataType id=\"fitness\">" << endl;
+		for (int i=0; i<=maxLabel; i++) {
+			xmlStream << "\t\t<state code=\"" << i << "\"/>" << endl;
+		}
+		xmlStream << "\t</generalDataType>" << endl;
+		xmlStream << endl;	
+		
+		// FITNESS PATTERNS
+		xmlStream << "\t<attributePatterns id=\"fitnessPatterns\" attribute=\"fitness\">" << endl;
+		xmlStream << "\t\t<generalDataType idref=\"fitness\"/>" << endl;
+		xmlStream << "\t\t<taxa idref=\"taxa\"/>" << endl;
+		xmlStream << "\t</attributePatterns>" << endl;
+		xmlStream << endl;		
+		
+	}
 	
 	// STARTING TREE
 	xmlStream << "\t<constantSize id=\"initialDemo\" units=\"years\">" << endl;
@@ -244,45 +250,49 @@ void Sample::printXML() {
 	xmlStream << "\t</treeLikelihood>" << endl;
 	xmlStream << endl;
 	
-	// FITNESS SUBSTITUTION MODEL
-	xmlStream << "\t<complexSubstitutionModel id=\"fitnessModel\" name=\"origin\">" << endl;
-	xmlStream << "\t\t<dataType idref=\"fitness\"/>" << endl;
-	xmlStream << "\t\t<rootFrequencies>" << endl;
-	xmlStream << "\t\t\t<frequencyModel id=\"fitnessFreqs\" normalize=\"true\">" << endl;
-	xmlStream << "\t\t\t\t<dataType idref=\"fitness\"/>" << endl;
-	xmlStream << "\t\t\t\t<frequencies>" << endl;
-	xmlStream << "\t\t\t\t\t<parameter id=\"fitnessFreqs.frequencies\" dimension=\"" << maxLabel + 1 << "\"/>" << endl;
-	xmlStream << "\t\t\t\t</frequencies>" << endl;
-	xmlStream << "\t\t\t</frequencyModel>" << endl;
-	xmlStream << "\t\t</rootFrequencies>" << endl;
-	xmlStream << "\t\t<rates relativeTo=\"1\">" << endl;
-	xmlStream << "\t\t\t<parameter id=\"fitnessRates\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;		
-	xmlStream << "\t\t</rates>" << endl;
-	xmlStream << "\t\t<rateIndicator>" << endl;
-	xmlStream << "\t\t\t<parameter id=\"fitnessIndicators\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;
-	xmlStream << "\t\t</rateIndicator>" << endl;
-	xmlStream << "\t</complexSubstitutionModel>" << endl;
-	xmlStream << endl;	
+	if (maxLabel>0) {		
 	
-	// FITNESS SITE MODEL
-    xmlStream << "\t<siteModel id=\"fitnessSiteModel\">" << endl;
-    xmlStream << "\t\t<substitutionModel>" << endl;
-    xmlStream << "\t\t\t<complexSubstitutionModel idref=\"fitnessModel\"/>" << endl;
-    xmlStream << "\t\t</substitutionModel>" << endl;
-    xmlStream << "\t\t<mutationRate>" << endl;
-    xmlStream << "\t\t\t<parameter id=\"fitnessMu\" value=\"0.005\" lower=\"0.0\" upper=\"10.0\"/>" << endl;
-    xmlStream << "\t\t</mutationRate>" << endl;
-    xmlStream << "\t</siteModel>" << endl;
-	xmlStream << endl;    
+		// FITNESS SUBSTITUTION MODEL
+		xmlStream << "\t<complexSubstitutionModel id=\"fitnessModel\" name=\"origin\">" << endl;
+		xmlStream << "\t\t<dataType idref=\"fitness\"/>" << endl;
+		xmlStream << "\t\t<rootFrequencies>" << endl;
+		xmlStream << "\t\t\t<frequencyModel id=\"fitnessFreqs\" normalize=\"true\">" << endl;
+		xmlStream << "\t\t\t\t<dataType idref=\"fitness\"/>" << endl;
+		xmlStream << "\t\t\t\t<frequencies>" << endl;
+		xmlStream << "\t\t\t\t\t<parameter id=\"fitnessFreqs.frequencies\" dimension=\"" << maxLabel + 1 << "\"/>" << endl;
+		xmlStream << "\t\t\t\t</frequencies>" << endl;
+		xmlStream << "\t\t\t</frequencyModel>" << endl;
+		xmlStream << "\t\t</rootFrequencies>" << endl;
+		xmlStream << "\t\t<rates relativeTo=\"1\">" << endl;
+		xmlStream << "\t\t\t<parameter id=\"fitnessRates\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;		
+		xmlStream << "\t\t</rates>" << endl;
+		xmlStream << "\t\t<rateIndicator>" << endl;
+		xmlStream << "\t\t\t<parameter id=\"fitnessIndicators\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;
+		xmlStream << "\t\t</rateIndicator>" << endl;
+		xmlStream << "\t</complexSubstitutionModel>" << endl;
+		xmlStream << endl;	
+		
+		// FITNESS SITE MODEL
+		xmlStream << "\t<siteModel id=\"fitnessSiteModel\">" << endl;
+		xmlStream << "\t\t<substitutionModel>" << endl;
+		xmlStream << "\t\t\t<complexSubstitutionModel idref=\"fitnessModel\"/>" << endl;
+		xmlStream << "\t\t</substitutionModel>" << endl;
+		xmlStream << "\t\t<mutationRate>" << endl;
+		xmlStream << "\t\t\t<parameter id=\"fitnessMu\" value=\"0.005\" lower=\"0.0\" upper=\"10.0\"/>" << endl;
+		xmlStream << "\t\t</mutationRate>" << endl;
+		xmlStream << "\t</siteModel>" << endl;
+		xmlStream << endl;    
+		
+		// FITNESS TREE MODEL
+		xmlStream << "\t<ancestralTreeLikelihood id=\"fitnessTreeLikelihood\">" << endl;
+		xmlStream << "\t\t<patterns idref=\"fitnessPatterns\"/>" << endl;
+		xmlStream << "\t\t<treeModel idref=\"treeModel\"/>" << endl;
+		xmlStream << "\t\t<siteModel idref=\"fitnessSiteModel\"/>" << endl;
+		xmlStream << "\t\t<complexSubstitutionModel idref=\"fitnessModel\"/>" << endl;
+		xmlStream << "\t</ancestralTreeLikelihood>" << endl;
+		xmlStream << endl;     
 	
-	// FITNESS TREE MODEL
-	xmlStream << "\t<ancestralTreeLikelihood id=\"fitnessTreeLikelihood\">" << endl;
-    xmlStream << "\t\t<patterns idref=\"fitnessPatterns\"/>" << endl;
-    xmlStream << "\t\t<treeModel idref=\"treeModel\"/>" << endl;
-	xmlStream << "\t\t<siteModel idref=\"fitnessSiteModel\"/>" << endl;
-    xmlStream << "\t\t<complexSubstitutionModel idref=\"fitnessModel\"/>" << endl;
-    xmlStream << "\t</ancestralTreeLikelihood>" << endl;
-	xmlStream << endl;     
+	}
 
 	// OPERATORS //////////////		
 	xmlStream << "\t<operators id=\"operators\">" << endl;
@@ -321,12 +331,18 @@ void Sample::printXML() {
 	xmlStream << "\t\t<wilsonBalding weight=\"3\">" << endl;
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;
 	xmlStream << "\t\t</wilsonBalding>" << endl;
-	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"10\">" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
-	xmlStream << "\t\t</scaleOperator>" << endl;
-	xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"30\" scaleAllIndependently=\"true\" autoOptimize=\"true\">" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;
-	xmlStream << "\t\t</scaleOperator>" << endl;
+	
+	if (maxLabel>0) {	
+	
+		xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"10\">" << endl;
+		xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
+		xmlStream << "\t\t</scaleOperator>" << endl;
+		xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"30\" scaleAllIndependently=\"true\" autoOptimize=\"true\">" << endl;
+		xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;
+		xmlStream << "\t\t</scaleOperator>" << endl;
+	
+	}
+	
 	xmlStream << "\t</operators>" << endl;
 	xmlStream << endl;
 	
@@ -340,32 +356,41 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t\t<generalizedSkyLineLikelihood idref=\"skyline\"/>" << endl;
 	xmlStream << "\t\t\t\t<exponentialMarkovLikelihood idref=\"eml1\"/>" << endl;
 		
-	int dimen = 0;
-	for (int i=maxLabel; i>0; i--) {
-		xmlStream << "\t\t\t\t<exponentialPrior mean=\"1.0\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
-		dimen++;
-		for (int j=1; j<i; j++) {
+	if (maxLabel>0) {	
+		
+		int dimen = 0;
+		for (int i=maxLabel; i>0; i--) {
+			xmlStream << "\t\t\t\t<exponentialPrior mean=\"1.0\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+			dimen++;
+			for (int j=1; j<i; j++) {
+				xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+				dimen++;
+			}
+		}
+		for (int i=maxLabel; i>0; i--) {
 			xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
 			dimen++;
-		}
-	}
-	for (int i=maxLabel; i>0; i--) {
-		xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
-		dimen++;
-		for (int j=1; j<i; j++) {
-			xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
-			dimen++;
-		}
-	}		
+			for (int j=1; j<i; j++) {
+				xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+				dimen++;
+			}
+		}		
+		
+		xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.005\" offset=\"0\">" << endl;
+		xmlStream << "\t\t\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
+		xmlStream << "\t\t\t\t</exponentialPrior>" << endl;
+		xmlStream << "\t\t\t\t<complexSubstitutionModel idref=\"fitnessModel\"/>" << endl;	
 	
-	xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.005\" offset=\"0\">" << endl;
-	xmlStream << "\t\t\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
-	xmlStream << "\t\t\t\t</exponentialPrior>" << endl;
-	xmlStream << "\t\t\t\t<complexSubstitutionModel idref=\"fitnessModel\"/>" << endl;	
+	}
+	
 	xmlStream << "\t\t\t</prior>" << endl;
 	xmlStream << "\t\t\t<likelihood id=\"likelihood\">" << endl;
-	xmlStream << "\t\t\t\t<treeLikelihood idref=\"fitnessTreeLikelihood\"/>" << endl;
-	xmlStream << "\t\t\t\t<ancestralTreeLikelihood idref=\"treeLikelihood\"/>" << endl;	
+	xmlStream << "\t\t\t\t<treeLikelihood idref=\"treeLikelihood\"/>" << endl;
+
+	if (maxLabel>0) {		
+		xmlStream << "\t\t\t\t<ancestralTreeLikelihood idref=\"fitnessTreeLikelihood\"/>" << endl;	
+	}
+	
 	xmlStream << "\t\t\t</likelihood>" << endl;
 	xmlStream << "\t\t</posterior>" << endl;
 	xmlStream << "\t\t<operators idref=\"operators\"/>" << endl;
@@ -392,13 +417,19 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<likelihood idref=\"likelihood\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"clock.rate\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"treeModel.rootHeight\"/>" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;						
+	if (maxLabel>0) {
+		xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;			
+	}
 	xmlStream << "\t\t\t<parameter idref=\"skyline.popSize\"/>" << endl;
-	xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;		
+	if (maxLabel>0) {	
+		xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;		
+	}
 	xmlStream << "\t\t</log>" << endl;
 	xmlStream << "\t\t<logTree id=\"treeFileLog\" logEvery=\"10000\" nexusFormat=\"true\" fileName=\"selsim.trees\" sortTranslationTable=\"true\">" << endl;
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;
-	xmlStream << "\t\t\t<ancestralTreeLikelihood idref=\"fitnessTreeLikelihood\"/>" << endl;	
+	if (maxLabel>0) {	
+		xmlStream << "\t\t\t<ancestralTreeLikelihood idref=\"fitnessTreeLikelihood\"/>" << endl;	
+	}
 	xmlStream << "\t\t\t<posterior idref=\"posterior\"/>" << endl;
 	xmlStream << "\t\t</logTree>" << endl;
 	xmlStream << "\t</mcmc>" << endl;

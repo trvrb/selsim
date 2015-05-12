@@ -6,11 +6,10 @@ This object contains a set of sequence objects.
 #ifndef POP_H
 #define POP_H
 
-using namespace std;
+#include "seq.h"
 
-#include <map>
-#include <set>
 #include <vector>
+using std::vector;
 
 class Population {
 
@@ -25,9 +24,13 @@ public:
 	string getSeq(int);								// outputs sequence corresponding to an allele
 	double getFitness(int);							// outputs fitness corresponding to an allele
 	
-	void print(int step);							// go through population and print its contents
+	void print();									// go through population and print its contents
 	
 	int getAlleleCount();
+	
+	double div(string,string);
+	double getDiversity();	
+	void printDiversity();	
 																		
 private:
 	int alleles;									// number of alleles in population

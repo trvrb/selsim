@@ -3,17 +3,16 @@ Member function definitions for Population class
 */
 
 #include "pop.h"
+#include "seq.h"
+#include "param.h"
+
+#include <fstream>
+using std::ofstream;
 
 #include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <string>
-#include <cstdlib>
-#include <map>
-#include <set>
-#include <vector>
-#include <cmath>
-#include <sstream>
+using std::cout;
+using std::endl;
+using std::ios;
 
 /* Constructor function to initialize private data */
 Population::Population() {
@@ -21,10 +20,19 @@ Population::Population() {
 	pop.push_back(initialSeq);
 	alleles = 1;
 
-	string popFile( "selsim.pop" );
-	ofstream popStream;
-	popStream.open( popFile.c_str(),ios::out);	
-	popStream.close();
+	if (PRINTPOPULATION) {
+		string popFile( "out.pop" );
+		ofstream popStream;
+		popStream.open( popFile.c_str(),ios::out);	
+		popStream.close();
+	}
+	
+	if (PRINTDIVERSITY) {
+		string divFile( "out.diversity" );
+		ofstream divStream;
+		divStream.open( divFile.c_str(),ios::out);	
+		divStream.close();	
+	}
 	
 }
 
@@ -158,15 +166,15 @@ double Population::getFitness(int allele) {
 }
 
 /* Print pop contents */
-void Population::print(int step) {
+void Population::print() {
 
-	string popFile( "selsim.pop" );
+	string popFile( "out.pop" );
 	ofstream popStream;
 	popStream.open( popFile.c_str(),ios::app);	
 
 	for (int i=0; i < alleles; i++) {
 		for (int j=0; j < pop[i].getCount(); j++) {
-			popStream << step << "\t" << pop[i].getSeq() << endl;
+			popStream << GEN-BURNIN << "\t" << pop[i].getSeq() << endl;
 		}
 	}
 
@@ -176,4 +184,56 @@ void Population::print(int step) {
 
 int Population::getAlleleCount() {
 	return alleles;
+}
+
+
+/* Nucleotide diversity */
+double Population::div(string seqA, string seqB) {
+
+	double diff = 0.0;
+	int comp = 0;
+
+	while (seqA.size() > 0) {
+
+		string ntA = seqA.substr(0,1);
+		seqA.erase(0,1);
+		string ntB = seqB.substr(0,1);
+		seqB.erase(0,1);
+	
+		if (ntA.compare("-") != 0 && ntB.compare("-") != 0) {	// ignore gaps
+			comp++;
+			if ( ntA.compare(ntB) != 0 ) {
+				diff++;
+			}
+		}
+		
+	}
+
+	return diff / comp;
+
+}
+
+double Population::getDiversity() {
+	double d = 0;
+	int count = 100;
+	for (int i=0; i<count; i++) {
+		string seqA = sampleSeq();
+		string seqB = sampleSeq();
+		d += div(seqA,seqB);
+	}
+	d = d / (double) count;
+	return d;
+}
+
+/* Print pop contents */
+void Population::printDiversity() {
+
+	string divFile( "out.diversity" );
+	ofstream divStream;
+	divStream.open( divFile.c_str(),ios::app);	
+
+	divStream << GEN-BURNIN << "\t" << getDiversity() << endl;
+
+	divStream.close();
+
 }

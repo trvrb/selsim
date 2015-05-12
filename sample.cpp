@@ -3,27 +3,29 @@ Member function definitions for Sample class
 */
 
 #include "sample.h"
+#include "param.h"
+
+#include <fstream>
+using std::ofstream;
+
+#include <sstream>
+using std::stringstream;
 
 #include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <string>
-#include <cstdlib>
-#include <map>
-#include <set>
-#include <vector>
-#include <cmath>
-#include <sstream>
+using std::cout;
+using std::endl;
+using std::ios;
 
 /* Constructor function to initialize private data */
 Sample::Sample() {
 	sampleCount = 0;
+	minLabel = 100000;
 	maxLabel = 0;
 }
 
 void Sample::pushBack(string seq, int gen, double fitness) {
 
-	double date = RUNTIME - gen;
+	double date = gen - BURNIN;
 	
 	sampleCount++;
 
@@ -33,22 +35,13 @@ void Sample::pushBack(string seq, int gen, double fitness) {
 	
 }
 
+int Sample::dimen() {
+	return maxLabel - minLabel + 1;
+}
+
 
 void Sample::constructNames() {
-
-	/* find sample with lowest fitness */
-	double minFitness = 1000000.0;
-	for (int i=0; i<sampleCount; i++) {
-		if (sampleFitnesses[i] < minFitness) {
-			minFitness = sampleFitnesses[i];
-		}
-	}
-		
-	int minLabel = 0;
-	if (ADVSEL > 0.000001 || DELSEL > 0.000001) {
-		minLabel = abs( log (minFitness) / log (1 + ADVSEL + DELSEL) );
-	}
-	
+			
 	char alpha [26] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
 		'S','T','U','V','W','X','Y','Z'};
 	
@@ -56,20 +49,16 @@ void Sample::constructNames() {
 
 		/* converting fitness to label */
 		/* doesn't work with simultaneous advantagous and deleterious mutation */
-		int label = 0;
+		double label = 0;
 		if (ADVSEL > 0.000001 || DELSEL > 0.000001) {	
-			label = abs( log (sampleFitnesses[i]) / log (1 + ADVSEL + DELSEL) ) - minLabel;	
+			label = abs(log (sampleFitnesses[i]) / log (1 + ADVSEL + DELSEL));	
 		}
 		sampleLabels.push_back(label);
 		
-		if (label > maxLabel) {
-			maxLabel = label;
-		}
+		if (label < minLabel) { minLabel = label; }
+		if (label > maxLabel) { maxLabel = label; }		
 
-		string name;
-		stringstream temp;
-		temp << label;
-		name = temp.str();
+		string name = "";
 	
 		for (int j = 0; j < 6; j++) {
 			int r = rgen.uniform(0,26);
@@ -83,21 +72,25 @@ void Sample::constructNames() {
 
 void Sample::printFitnesses() {
 
-	string fitFile( "selsim.fitness" );
-	ofstream fitStream;
-	fitStream.open( fitFile.c_str(),ios::out);
+	if (dimen()>0) {	
 
-	for (int i=0; i<sampleCount; i++) {
-		fitStream << sampleDates[i] << "\t" << sampleFitnesses[i] << "\t" << sampleLabels[i] << endl;
+		string fitFile( "out.fitness" );
+		ofstream fitStream;
+		fitStream.open( fitFile.c_str(),ios::out);
+	
+		for (int i=0; i<sampleCount; i++) {
+			fitStream << sampleDates[i] << "\t" << sampleFitnesses[i] << "\t" << sampleLabels[i] << endl;
+		}
+	
+		fitStream.close();
+	
 	}
-
-	fitStream.close();
 
 }
 
 void Sample::printXML() {
 
-	string xmlFile( "selsim.beast" );
+	string xmlFile( "out.beast" );
 	ofstream xmlStream;
 	xmlStream.open( xmlFile.c_str(),ios::out);
 	
@@ -113,8 +106,8 @@ void Sample::printXML() {
 	xmlStream << "\t<taxa id=\"taxa\">" << endl;
 	for (int i=0; i<sampleCount; i++) {
 		xmlStream << "\t\t<taxon id=\"" << sampleNames[i] << "\">" << endl;
-		xmlStream << "\t\t\t<date value=\"" << sampleDates[i] << "\" direction=\"backwards\" units=\"years\"/>" << endl;
-		if (maxLabel>0) {
+		xmlStream << "\t\t\t<date value=\"" << sampleDates[i] << "\" direction=\"forwards\" units=\"years\"/>" << endl;
+		if (dimen()>0) {
 			xmlStream << "\t\t\t<attr name=\"fitness\">" <<  sampleLabels[i] << "</attr>" << endl;
 		}
 		xmlStream << "\t\t</taxon>" << endl;
@@ -142,11 +135,11 @@ void Sample::printXML() {
 	xmlStream << "\t</patterns>" << endl;
 	xmlStream << endl;
 	
-	if (maxLabel>0) {	
+	if (dimen()>0) {	
 	
 		// FITNESS TYPES
 		xmlStream << "\t<generalDataType id=\"fitness\">" << endl;
-		for (int i=0; i<=maxLabel; i++) {
+		for (int i=minLabel; i<=maxLabel; i++) {
 			xmlStream << "\t\t<state code=\"" << i << "\"/>" << endl;
 		}
 		xmlStream << "\t</generalDataType>" << endl;
@@ -250,7 +243,7 @@ void Sample::printXML() {
 	xmlStream << "\t</treeLikelihood>" << endl;
 	xmlStream << endl;
 	
-	if (maxLabel>0) {		
+	if (dimen()>0) {		
 	
 		// FITNESS SUBSTITUTION MODEL
 		xmlStream << "\t<complexSubstitutionModel id=\"fitnessModel\" name=\"origin\">" << endl;
@@ -259,15 +252,15 @@ void Sample::printXML() {
 		xmlStream << "\t\t\t<frequencyModel id=\"fitnessFreqs\" normalize=\"true\">" << endl;
 		xmlStream << "\t\t\t\t<dataType idref=\"fitness\"/>" << endl;
 		xmlStream << "\t\t\t\t<frequencies>" << endl;
-		xmlStream << "\t\t\t\t\t<parameter id=\"fitnessFreqs.frequencies\" dimension=\"" << maxLabel + 1 << "\"/>" << endl;
+		xmlStream << "\t\t\t\t\t<parameter id=\"fitnessFreqs.frequencies\" dimension=\"" << dimen() << "\"/>" << endl;
 		xmlStream << "\t\t\t\t</frequencies>" << endl;
 		xmlStream << "\t\t\t</frequencyModel>" << endl;
 		xmlStream << "\t\t</rootFrequencies>" << endl;
 		xmlStream << "\t\t<rates relativeTo=\"1\">" << endl;
-		xmlStream << "\t\t\t<parameter id=\"fitnessRates\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;		
+		xmlStream << "\t\t\t<parameter id=\"fitnessRates\" dimension=\"" << dimen() * (dimen()-1) << "\" value=\"1.0\"/>" << endl;		
 		xmlStream << "\t\t</rates>" << endl;
 		xmlStream << "\t\t<rateIndicator>" << endl;
-		xmlStream << "\t\t\t<parameter id=\"fitnessIndicators\" dimension=\"" << (maxLabel + 1) * maxLabel << "\" value=\"1.0\"/>" << endl;
+		xmlStream << "\t\t\t<parameter id=\"fitnessIndicators\" dimension=\"" << dimen() * (dimen()-1) << "\" value=\"1.0\"/>" << endl;
 		xmlStream << "\t\t</rateIndicator>" << endl;
 		xmlStream << "\t</complexSubstitutionModel>" << endl;
 		xmlStream << endl;	
@@ -332,7 +325,7 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;
 	xmlStream << "\t\t</wilsonBalding>" << endl;
 	
-	if (maxLabel>0) {	
+	if (dimen()>0) {	
 	
 		xmlStream << "\t\t<scaleOperator scaleFactor=\"0.75\" weight=\"10\">" << endl;
 		xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
@@ -356,25 +349,27 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t\t<generalizedSkyLineLikelihood idref=\"skyline\"/>" << endl;
 	xmlStream << "\t\t\t\t<exponentialMarkovLikelihood idref=\"eml1\"/>" << endl;
 		
-	if (maxLabel>0) {	
+	if (dimen()>0) {	
 		
-		int dimen = 0;
-		for (int i=maxLabel; i>0; i--) {
-			xmlStream << "\t\t\t\t<exponentialPrior mean=\"1.0\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
-			dimen++;
-			for (int j=1; j<i; j++) {
-				xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
-				dimen++;
+		xmlStream << endl;
+		int d = 0;
+		for (int i=maxLabel; i>minLabel; i--) {
+			xmlStream << "\t\t\t\t<exponentialPrior mean=\"1.0\" offset=\"0\"> <subStatistic dimension=\"" << d << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+			d++;
+			for (int j=minLabel+1; j<i; j++) {
+				xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << d << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+				d++;
 			}
 		}
-		for (int i=maxLabel; i>0; i--) {
-			xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
-			dimen++;
-			for (int j=1; j<i; j++) {
-				xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << dimen << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
-				dimen++;
+		for (int i=maxLabel; i>minLabel; i--) {
+			xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << d << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+			d++;
+			for (int j=minLabel+1; j<i; j++) {
+				xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.001\" offset=\"0\"> <subStatistic dimension=\"" << d << "\"> <parameter idref=\"fitnessRates\"/> </subStatistic> </exponentialPrior>" << endl;
+				d++;
 			}
 		}		
+		xmlStream << endl;
 		
 		xmlStream << "\t\t\t\t<exponentialPrior mean=\"0.005\" offset=\"0\">" << endl;
 		xmlStream << "\t\t\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;
@@ -387,7 +382,7 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<likelihood id=\"likelihood\">" << endl;
 	xmlStream << "\t\t\t\t<treeLikelihood idref=\"treeLikelihood\"/>" << endl;
 
-	if (maxLabel>0) {		
+	if (dimen()>0) {		
 		xmlStream << "\t\t\t\t<ancestralTreeLikelihood idref=\"fitnessTreeLikelihood\"/>" << endl;	
 	}
 	
@@ -417,17 +412,17 @@ void Sample::printXML() {
 	xmlStream << "\t\t\t<likelihood idref=\"likelihood\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"clock.rate\"/>" << endl;
 	xmlStream << "\t\t\t<parameter idref=\"treeModel.rootHeight\"/>" << endl;
-	if (maxLabel>0) {
+	if (dimen()>0) {
 		xmlStream << "\t\t\t<parameter idref=\"fitnessMu\"/>" << endl;			
 	}
 	xmlStream << "\t\t\t<parameter idref=\"skyline.popSize\"/>" << endl;
-	if (maxLabel>0) {	
+	if (dimen()>0) {	
 		xmlStream << "\t\t\t<parameter idref=\"fitnessRates\"/>" << endl;		
 	}
 	xmlStream << "\t\t</log>" << endl;
 	xmlStream << "\t\t<logTree id=\"treeFileLog\" logEvery=\"10000\" nexusFormat=\"true\" fileName=\"selsim.trees\" sortTranslationTable=\"true\">" << endl;
 	xmlStream << "\t\t\t<treeModel idref=\"treeModel\"/>" << endl;
-	if (maxLabel>0) {	
+	if (dimen()>0) {	
 		xmlStream << "\t\t\t<ancestralTreeLikelihood idref=\"fitnessTreeLikelihood\"/>" << endl;	
 	}
 	xmlStream << "\t\t\t<posterior idref=\"posterior\"/>" << endl;

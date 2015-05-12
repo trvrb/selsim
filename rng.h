@@ -63,7 +63,7 @@
 
 using std::vector;
 
-//static const double PI   =  3.1415926535897932; // commmented out because of conflict with defined PI
+static const double PI   =  3.1415926535897932; // commmented out because of conflict with defined PI
 static const double AD_l =  0.6931471805599453;
 static const double AD_a =  5.7133631526454228;
 static const double AD_b =  3.4142135623730950;

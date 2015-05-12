@@ -7,12 +7,8 @@ count in the population.
 #ifndef SEQ_H
 #define SEQ_H
 
-using namespace std;
-
-#include <map>
-#include <set>
-#include <vector>
 #include <string>
+using std::string;
 
 class Sequence {
 

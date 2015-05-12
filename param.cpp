@@ -6,15 +6,34 @@ Parameter values are all global
 #include "param.h"
 
 #include <iostream>
+using std::cout;
+using std::endl;
+
 #include <fstream>
-#include <iomanip>
-#include <string>
-#include <cstdlib>
-#include <map>
-#include <set>
-#include <vector>
-#include <cmath>
-#include <sstream>
+using std::ifstream;
+
+// global random number generator
+RNG rgen;
+
+// never modified
+int GEN = 0;
+string ALPHA = "ATGC";
+int BASES = 4;
+
+// defaults
+double LENGTH = 100;					// length of nucleotide sequence
+double MU = 0.01;						// per base per generation mutation rate
+double ADVPRO = 0.0;					// proportion of mutations advantageous
+double ADVSEL = 0.0;					// selective advantage of advantageous mutants
+double DELPRO = 0.0;					// proportion of mutations deleterious
+double DELSEL = 0.0;					// selective disadvantage of deleterious mutants
+int POPSIZE = 100;						// number of individuals in population
+int RUNTIME = 100;						// number of generations to run simulation
+int BURNIN = 90;						// number of generations to run before logging data
+int SAMPLECOUNT = 10;					// approximate number of samples to log
+int PRINTSTEP = 100;					// print population / screen every x steps
+bool PRINTPOPULATION = false;			// print full population of sequences
+bool PRINTDIVERSITY = false;			// print pairwise diversity
 
 /* Constructor function to initialize private data */
 Parameters::Parameters() {
@@ -23,7 +42,7 @@ Parameters::Parameters() {
 	
 	// check to see file exists
 	string paramString;
-	ifstream paramFile ("selsim.param");
+	ifstream paramFile ("in.param");
 	if (paramFile.is_open()) {
 		while (! paramFile.eof() ) {
 			getline (paramFile,paramString);
@@ -31,7 +50,7 @@ Parameters::Parameters() {
 		}
 	}
 	else { 
-		cout << "Unable to find selsim.param" << endl; 
+		cout << "Unable to find in.param" << endl; 
 		cout << "Running with default parameters" << endl;
 	}
 	
@@ -77,7 +96,11 @@ void Parameters::importLine(string line) {
 	else if (pstring == "SAMPLECOUNT")
 		SAMPLECOUNT = v;
 	else if (pstring == "PRINTSTEP")
-		PRINTSTEP = v;		
+		PRINTSTEP = v;	
+	else if (pstring == "PRINTPOPULATION")
+		PRINTPOPULATION = true;		
+	else if (pstring == "PRINTDIVERSITY")
+		PRINTDIVERSITY = true;				
 	
 }
 

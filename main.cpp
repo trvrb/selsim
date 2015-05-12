@@ -8,45 +8,32 @@
 	Class Sequence holds sequences along with their fitness.
 	Class Population holds a set of sequences.  Functions to step population forward in time.
 		Needs to store mutation / selection parameters.
+		
+	### Does not handle both ADV and DEL mutations in output at the moment; one or the other work fine.
 	
 */
 
 
-using namespace std;
-
 #include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <string>
-#include <cstdlib>
-#include <map>
-#include <vector>
-#include <set>
+using std::cout;
+using std::endl;
 
-#define INF pow(double(10),double(100)) // 10^100 (~infinity)
-#define PI 3.1415926535897932
 //#define DEBUG // comment line out to turn off debugging
 
 /* random number generator, global scope */
 #include "rng.h"
-#include "rng.cpp"
-RNG rgen;
 
 /* declaring global parameters */
 #include "param.h"
-#include "param.cpp"
 
 /* Sequence class */
 #include "seq.h"
-#include "seq.cpp"
 
 /* Population class */
 #include "pop.h"
-#include "pop.cpp"
 
 /* Sample class */
 #include "sample.h"
-#include "sample.cpp"
 
 int main() {			
 	
@@ -56,28 +43,31 @@ int main() {
 	
 	prm.print();
 			
-	for (int gen=0; gen<RUNTIME; gen++) {
+	for (GEN=0; GEN<RUNTIME; GEN++) {
 	
 		// EVOLVE //////////////
 		p.evolveStep();
 			
 		// SAMPLE //////////////	
-		if (gen > BURNIN) {
-			if (gen % PRINTSTEP == 0) {
-				p.print(gen-BURNIN);
+		if (GEN > BURNIN) {
+			if (GEN % PRINTSTEP == 0) {
+				if (PRINTPOPULATION) { p.print(); }
+				if (PRINTDIVERSITY) { p.printDiversity(); }
 			}
 			int samples = rgen.poisson( SAMPLECOUNT / (double) (RUNTIME-BURNIN) );
 			for (int c=0; c<samples; c++) {
 				int allele = p.sampleAllele();
-				s.pushBack( p.getSeq(allele), gen, p.getFitness(allele) );
+				s.pushBack( p.getSeq(allele), GEN, p.getFitness(allele) );
 			}
 		}
 		
 		// SCREEN //////////////
-		cout << "Step " << gen << "\t";
-		for (int j=0; j<p.getAlleleCount(); j += 5) 
-			cout << ".";
-		cout << endl;
+			if (GEN % PRINTSTEP == 0) {
+			cout << "Step " << GEN << "\t";
+			for (int j=0; j<p.getAlleleCount(); j += 5) 
+				cout << ".";
+			cout << endl;
+		}
 	
 	}
 		

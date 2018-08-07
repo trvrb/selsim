@@ -1,0 +1,18 @@
+LENGTH = 1000			# length of nucleotide sequence
+
+MU = 0.00002			# per base per generation mutation rate
+
+ADVPRO = 0.001			# proportion of mutations advantageous
+ADVSEL = 0.1			# selective advantage of advantageous mutants 20*0.01 = 0.2 
+DELPRO = 0.0			# proportion of mutations deleterious
+DELSEL = 0.0			# selective disadvantage of deleterious mutants
+
+POPSIZE = 1000			# number of individuals in population
+
+RUNTIME = 22000			# number of generations to run simulation
+BURNIN = 20000			# number of generations to run before logging data
+SAMPLECOUNT = 500		# approximate number of samples to log
+PRINTSTEP = 100		
+
+#PRINTPOPULATION			# if declared, prints full population of sequences every PRINTSTEP after BURNIN
+#PRINTDIVERSITY			# if declared, prints mean diversity of population every PRINTSTEP after BURNIN
